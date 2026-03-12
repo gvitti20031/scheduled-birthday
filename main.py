@@ -22,12 +22,16 @@ friends = ["Colin", "Shayan", "Skylar", "Dean"]
 years = [2003, 2003, 2003, 2008]
 months = [3, 2, 4, 6]
 days = [12, 10, 12, 2]
-birthdays = pd.read_csv("birthdays.csv")
-birthdays["name"] = friends
-birthdays["email"] = "gsvitti03@gmail.com"
-birthdays["year"] = years
-birthdays["month"] = months
-birthdays["day"] = days
+email = ["gsvitti03@gmail.com"]*4
+birthdays = pd.DataFrame(
+    {
+        "name": friends,
+        "email": email,
+        "year": years,
+        "month": months,
+        "day": days
+    }
+)
 
 birthdays.to_csv("birthdays.csv", index=False)
 
