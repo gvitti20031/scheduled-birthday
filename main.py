@@ -63,7 +63,7 @@ if today_tuple in birthdays_dict:
 parameters = {
     'lat': 32.715736,
     'lon': -117.161087,
-    'appid': os.environ.get("OMW_API_KEY"),
+    'appid': os.environ.get("OWM_API_KEY"),
     'cnt': 4,
 }
 
