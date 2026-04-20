@@ -10,6 +10,8 @@ import random
 import pandas as pd
 import smtplib
 import datetime as dt
+import requests
+from twilio.rest import Client
 
 MY_EMAIL = os.environ.get("MY_EMAIL")
 MY_PASSWORD = os.environ.get("MY_PASSWORD")
@@ -55,4 +57,50 @@ if today_tuple in birthdays_dict:
         connection.sendmail(from_addr=MY_EMAIL,
                             to_addrs=birthdays_dict[today_tuple]["email"],
                             msg=f"Subject:Happy Birthday\n\n{finalized_letter}")
+        
+# Weather API section - part 2
 
+parameters = {
+    'lat': 32.715736,
+    'lon': -117.161087,
+    'appid': os.environ.get("OMW_API_KEY"),
+    'cnt': 4,
+}
+
+OWM_endpoint = 'http://api.openweathermap.org/data/2.5/forecast'
+response = requests.get(OWM_endpoint, params=parameters)
+account_sid = os.environ.get("TWILIO_SID")
+auth_token = os.environ.get("TWILIO_TOKEN")
+
+# 200 for success, 400 for failure
+print(response.status_code)
+# print(response.json())
+
+time_list = response.json()['list']
+
+weather_ids = []
+weather_descriptions = []
+
+for i in range (len(time_list)):
+    subsection = time_list[i]
+    weather = subsection['weather']
+    weather_id = weather[0]['id']
+    weather_description = weather[0]['description']
+
+    weather_ids.append(weather_id)
+    weather_descriptions.append(weather_description)
+
+if any(weather_code < 700 for weather_code in weather_ids):
+    # Initiate the client to send SMS message
+    client = Client(account_sid, auth_token)
+    message = client.messages \
+        .create(
+        from_='whatsapp:+14155238886',
+        body="It's going to rain today, remember to bring an umbrella",
+        to='whatsapp:+18586954115'
+    )
+
+    print(message.status)
+
+else:
+    print('The sky looks clear today, no need for an umbrella!')
